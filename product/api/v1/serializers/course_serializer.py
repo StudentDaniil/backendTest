@@ -4,6 +4,7 @@ from rest_framework import serializers
 
 from courses.models import Course, Group, Lesson
 from users.models import Subscription
+from django.utils import timezone
 
 User = get_user_model()
 
@@ -57,7 +58,7 @@ class CreateGroupSerializer(serializers.ModelSerializer):
         )
 
 
-class MiniLessonSerializer(serializers.ModelSerializer):
+class MiniLessonSerializer(LessonSerializer):
     """Список названий уроков для списка курсов."""
 
     class Meta:
@@ -99,8 +100,8 @@ class CourseSerializer(serializers.ModelSerializer):
             'title',
             'start_date',
             'price',
-            'lessons_count',
             'lessons',
+            'lessons_count',
             'demand_course_percent',
             'students_count',
             'groups_filled_percent',
@@ -113,6 +114,13 @@ class CreateCourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = '__all__'
+
+    def create(self, validated_data):
+        start_date = validated_data.get('start_date', None)
+        if start_date is None:
+            validated_data['start_date'] = timezone.now()
+
+        return super().create(validated_data)
 
 
 class GroupSerializer(serializers.ModelSerializer):

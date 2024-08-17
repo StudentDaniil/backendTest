@@ -18,7 +18,8 @@ class Course(models.Model):
     start_date = models.DateTimeField(
         auto_now=False,
         auto_now_add=False,
-        verbose_name='Дата и время начала курса'
+        verbose_name='Дата и время начала курса',
+        blank=True
     )
 
     price = models.DecimalField(
@@ -58,12 +59,11 @@ class Lesson(models.Model):
     """Модель урока."""
 
     course = models.ForeignKey(
-        'courses.Course',
+        Course,
         on_delete=models.CASCADE,
         verbose_name='Курс',
         related_name='lessons',
         null=True,
-
     )
     title = models.CharField(
         max_length=250,

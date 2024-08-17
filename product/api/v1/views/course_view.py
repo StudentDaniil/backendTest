@@ -12,7 +12,7 @@ from api.v1.serializers.course_serializer import (CourseSerializer,
                                                   LessonSerializer)
 from api.v1.serializers.user_serializer import SubscriptionSerializer
 from courses.models import Course
-from users.models import Subscription
+from users.models import Subscription, Balance
 
 
 class LessonViewSet(viewsets.ModelViewSet):
@@ -27,6 +27,7 @@ class LessonViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         course = get_object_or_404(Course, id=self.kwargs.get('course_id'))
+        print(f"Creating lesson for course: {course.title}")
         serializer.save(course=course)
 
     def get_queryset(self):
@@ -72,9 +73,34 @@ class CourseViewSet(viewsets.ModelViewSet):
     def pay(self, request, pk):
         """Покупка доступа к курсу (подписка на курс)."""
 
-        # TODO
+        course = get_object_or_404(Course, pk=pk)
+        user = request.user
 
-        return Response(
-            data=data,
-            status=status.HTTP_201_CREATED
-        )
+        try:
+            balance = Balance.objects.get(user=user)
+        except Balance.DoesNotExist:
+            return Response({"error": "У вас нет информации о балансе."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if balance.amount < course.price:
+            return Response({"error": "Недостаточно бонусов для покупки курса."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if Subscription.objects.filter(user=user, course=course).exists():
+            return Response({"error": "Вы уже подписаны на этот курс."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        subscription = Subscription.objects.create(user=user, course=course)
+
+        balance.amount -= course.price
+        balance.save()
+
+        data = {
+            "subscription": {
+                "user": user.email,
+                "course": course.title,
+                "created_at": subscription.created_at
+            }
+        }
+
+        return Response(data, status=status.HTTP_201_CREATED)
