@@ -10,6 +10,7 @@ class CustomUser(AbstractUser):
         max_length=250,
         unique=True
     )
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = (
         'username',
@@ -47,12 +48,7 @@ class Balance(models.Model):
         ordering = ('-id',)
 
     def __str__(self):
-        return self.amount
-
-    def save(self, *args, **kwargs):
-        if self.amount < 0:
-            raise ValueError("Баланс пользователя не может быть меньше 0")
-        super().save(args, kwargs)
+        return f"Баланс: {self.amount}"
 
 
 class Subscription(models.Model):
@@ -62,20 +58,21 @@ class Subscription(models.Model):
         CustomUser,
         on_delete=models.CASCADE,
         verbose_name='Пользователь',
-        related_name='user_subscriptions'
+        related_name='user_subscriptions',
+        null=True
     )
     course = models.ForeignKey(
         'courses.Course',
         on_delete=models.CASCADE,
         verbose_name='Курс',
-        related_name='course_subscriptions'
+        related_name='course_subscriptions',
+        null=True
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'
-        unique_together = ('user', 'course')
 
     def __str__(self):
         return f"Подписка {self.user.email} на {self.course.title}"

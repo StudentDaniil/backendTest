@@ -18,7 +18,8 @@ class Course(models.Model):
     start_date = models.DateTimeField(
         auto_now=False,
         auto_now_add=False,
-        verbose_name='Дата и время начала курса'
+        verbose_name='Дата и время начала курса',
+        blank=True
     )
 
     price = models.DecimalField(
@@ -32,15 +33,17 @@ class Course(models.Model):
         default=0,
         verbose_name='Количество уроков',
     )
-    demand_course_percent = models.IntegerField(
+    demand_course_percent = models.FloatField(
         default=0,
         verbose_name='Процент спроса на курс',
     )
-    students_count = models.IntegerField(
+    students = models.ManyToManyField(
+        CustomUser,
         default=0,
-        verbose_name='Количество студентов',
+        verbose_name='Студенты курса',
+        related_name='students_course',
     )
-    groups_filled_percent = models.IntegerField(
+    groups_filled_percent = models.FloatField(
         default=0,
         verbose_name='Процент заполненности групп',
     )
@@ -58,12 +61,11 @@ class Lesson(models.Model):
     """Модель урока."""
 
     course = models.ForeignKey(
-        'courses.Course',
+        Course,
         on_delete=models.CASCADE,
         verbose_name='Курс',
         related_name='lessons',
         null=True,
-
     )
     title = models.CharField(
         max_length=250,
