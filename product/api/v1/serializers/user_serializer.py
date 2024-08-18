@@ -4,7 +4,7 @@ from rest_framework import serializers
 
 from users.models import Subscription, Balance
 
-from api.v1.serializers.course_serializer import CourseSerializer
+from api.v1.serializers.course_serializer import FullCourseSerializer
 
 User = get_user_model()
 
@@ -41,7 +41,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     """Сериализатор подписки."""
 
     user = UserSerializer(read_only=True)
-    course = CourseSerializer(read_only=True)
+    course = FullCourseSerializer(read_only=True)
 
     class Meta:
         model = Subscription

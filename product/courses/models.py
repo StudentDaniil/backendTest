@@ -33,15 +33,17 @@ class Course(models.Model):
         default=0,
         verbose_name='Количество уроков',
     )
-    demand_course_percent = models.IntegerField(
+    demand_course_percent = models.FloatField(
         default=0,
         verbose_name='Процент спроса на курс',
     )
-    students_count = models.IntegerField(
+    students = models.ManyToManyField(
+        CustomUser,
         default=0,
-        verbose_name='Количество студентов',
+        verbose_name='Студенты курса',
+        related_name='students_course',
     )
-    groups_filled_percent = models.IntegerField(
+    groups_filled_percent = models.FloatField(
         default=0,
         verbose_name='Процент заполненности групп',
     )
