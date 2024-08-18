@@ -75,7 +75,7 @@
   ```
 </details>
 
-<details><summary> GET: http://127.0.0.1:8000/api/v1/courses/1/groups/  - показать список групп определенного курса, если пользователь админ.(is_stuff)</summary> 
+<details><summary> GET: http://localhost:8000/api/v1/courses/1/groups/  - показать список групп определенного курса, если пользователь админ.(is_stuff)</summary> 
   200 OK:
   ```
   [
