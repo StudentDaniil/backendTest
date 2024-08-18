@@ -122,7 +122,7 @@ class AdminCourseSerializer(serializers.ModelSerializer):
 
 
 class FullCourseSerializer(serializers.ModelSerializer):
-    """Курсы для подписанных пользователей и администраторов."""
+    """Курсы для подписанных пользователей."""
     lessons = MiniLessonSerializer(many=True, read_only=True)
     lessons_count = serializers.SerializerMethodField()
 
